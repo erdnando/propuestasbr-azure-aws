@@ -1,0 +1,63 @@
+graph TB
+    subgraph "Continuación desde Parte 1"
+        DECISION_INPUT[📋 Resultado de Decisión<br/>⬆️ VIENE DE PARTE 1]
+    end
+    
+    subgraph "Partner Externo - Decisión Final"
+        APPROVED[✅ Pre-Aprobación<br/>PRE_APPROVAL_GRANTED]
+        REJECTED[❌ Solicitud Rechazada<br/>APPLICATION_REJECTED]
+        MANUAL[👤 Revisión Manual<br/>MANUAL_REVIEW_REQUIRED]
+    end
+    
+    subgraph "Bradescard - Core Bancario"
+        CORE_REQ[Solicitud Alta Core<br/>CORE_REGISTRATION_REQUESTED]
+        CORE_VALID[Validación Core<br/>CORE_VALIDATION_COMPLETED]
+        CORE_SUCCESS[✅ Cliente Registrado<br/>CORE_REGISTRATION_COMPLETED]
+        CORE_ERROR[❌ Error Core<br/>CORE_REGISTRATION_FAILED]
+    end
+    
+    subgraph "Producción y Entrega"
+        CARD_GEN[Generación Tarjeta<br/>CARD_GENERATION_STARTED]
+        CARD_READY[Tarjeta Lista<br/>CARD_PRODUCTION_COMPLETED]
+        DELIVERY[Entrega<br/>CARD_DELIVERY_INITIATED]
+        ACTIVATED[Activación<br/>CARD_ACTIVATED]
+        COMPLETED[🎉 Proceso Completado<br/>ORIGINATION_COMPLETED]
+    end
+    
+    subgraph "Finalizaciones"
+        END_REJECTED[🔚 FIN - Rechazado]
+        END_ERROR[🔚 FIN - Error]
+        END_MANUAL[🔚 FIN - En Revisión]
+    end
+    
+    DECISION_INPUT --> APPROVED
+    DECISION_INPUT --> REJECTED
+    DECISION_INPUT --> MANUAL
+    
+    APPROVED --> CORE_REQ
+    CORE_REQ --> CORE_VALID
+    CORE_VALID --> CORE_SUCCESS
+    CORE_VALID --> CORE_ERROR
+    
+    CORE_SUCCESS --> CARD_GEN
+    CARD_GEN --> CARD_READY
+    CARD_READY --> DELIVERY
+    DELIVERY --> ACTIVATED
+    ACTIVATED --> COMPLETED
+    
+    REJECTED --> END_REJECTED
+    CORE_ERROR --> END_ERROR
+    MANUAL --> END_MANUAL
+    
+    classDef partnerStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef bradesStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef decisionStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef errorStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef successStyle fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef continuaStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
+    
+    class APPROVED,REJECTED,MANUAL,CARD_GEN,CARD_READY,DELIVERY,ACTIVATED partnerStyle
+    class CORE_REQ,CORE_VALID,CORE_SUCCESS bradesStyle
+    class DECISION_INPUT continuaStyle
+    class CORE_ERROR,END_REJECTED,END_ERROR,END_MANUAL errorStyle
+    class COMPLETED successStyle

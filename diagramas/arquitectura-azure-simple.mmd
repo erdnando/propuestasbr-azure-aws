@@ -1,0 +1,49 @@
+graph TB
+    subgraph "Partners Externos"
+        P1[Partner Retail A<br/>API Client]
+        P2[Partner Retail B<br/>API Client]  
+        P3[Partner Retail N<br/>API Client]
+    end
+    
+    subgraph "Azure - Capa de Entrada"
+        APIM[Azure API Management<br/>Standard Tier<br/>OAuth2 + Rate Limiting]
+    end
+    
+    subgraph "Azure - Capa de Aplicación"
+        APP[App Service<br/>.NET 8 API<br/>Auto-scaling]
+        QUEUE[Azure Storage Queues<br/>Procesamiento Asíncrono]
+    end
+    
+    subgraph "Azure - Capa de Datos"
+        SQL[Azure SQL Database<br/>Standard + Always Encrypted]
+        BLOB[Blob Storage Cool<br/>Archivo Compliance]
+    end
+    
+    subgraph "Azure - Monitoreo Básico"
+        AI[Application Insights<br/>Logs + Métricas]
+        KV[Key Vault Standard<br/>Secretos + Claves]
+    end
+    
+    P1 --> APIM
+    P2 --> APIM
+    P3 --> APIM
+    
+    APIM --> APP
+    APP --> QUEUE
+    APP --> SQL
+    
+    QUEUE --> SQL
+    SQL --> BLOB
+    
+    APP --> AI
+    KV -.-> APP
+    
+    classDef partnerStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef azureStyle fill:#e1f5fe,stroke:#0277bd,stroke-width:2px  
+    classDef dataStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef monitorStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    
+    class P1,P2,P3 partnerStyle
+    class APIM,APP,QUEUE azureStyle
+    class SQL,BLOB dataStyle
+    class AI,KV monitorStyle

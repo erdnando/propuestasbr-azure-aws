@@ -1,0 +1,64 @@
+graph TB
+    subgraph "Partner Externo - Inicio"
+        INIT[Inicio Solicitud<br/>ORIGINATION_STARTED]
+        DATA[Captura Datos<br/>DATA_COLLECTION_COMPLETED]
+        VALID[Validación Inicial<br/>INITIAL_VALIDATION_COMPLETED]
+    end
+    
+    subgraph "Partner Biométrico - Digital Onboarding"
+        BIO_INIT[Inicio Onboarding<br/>DIGITAL_ONBOARDING_STARTED]
+        PHOTO_ID[Captura ID Oficial<br/>PHOTO_ID_CAPTURE_COMPLETED]
+        OCR_PROC[Procesamiento OCR<br/>OCR_PROCESSING_COMPLETED]
+        FACIAL_CAP[Captura Facial<br/>FACIAL_CAPTURE_COMPLETED]
+        LIVENESS[Prueba Liveness<br/>LIVENESS_CHECK_COMPLETED]
+        FACEMATCH[Face Match<br/>FACEMATCH_VALIDATION_COMPLETED]
+        DIGITAL_SIGN[Firma Digital<br/>DIGITAL_SIGNATURE_COMPLETED]
+    end
+    
+    subgraph "Bradescard - Validaciones"
+        BURO[Consulta Buró<br/>BUREAU_QUERY_REQUESTED]
+        BURO_RESP[Respuesta Buró<br/>BUREAU_RESPONSE_RECEIVED]
+    end
+    
+    subgraph "Business Rules Engine - Scoring"
+        BRE_INIT[Inicio Motor Reglas<br/>BUSINESS_RULES_ENGINE_STARTED]
+        RULE_EVAL[Evaluación Reglas<br/>BUSINESS_RULES_EVALUATED]
+        SCORE_CALC[Cálculo Score<br/>SCORE_CALCULATION_COMPLETED]
+        RISK_ASSESS[Evaluación Riesgo<br/>RISK_ASSESSMENT_COMPLETED]
+        LIMIT_CALC[Cálculo Límite<br/>CREDIT_LIMIT_CALCULATED]
+    end
+    
+    subgraph "Partner Externo - Decisión"
+        DECISION[Análisis Decisión<br/>DECISION_ANALYSIS_STARTED]
+        DECISION_RESULT[📋 Resultado de Decisión<br/>⬇️ CONTINÚA EN PARTE 2]
+    end
+    
+    INIT --> DATA
+    DATA --> VALID
+    VALID --> BIO_INIT
+    BIO_INIT --> PHOTO_ID
+    PHOTO_ID --> OCR_PROC
+    OCR_PROC --> FACIAL_CAP
+    FACIAL_CAP --> LIVENESS
+    LIVENESS --> FACEMATCH
+    FACEMATCH --> DIGITAL_SIGN
+    DIGITAL_SIGN --> BURO
+    BURO --> BURO_RESP
+    BURO_RESP --> BRE_INIT
+    BRE_INIT --> RULE_EVAL
+    RULE_EVAL --> SCORE_CALC
+    SCORE_CALC --> RISK_ASSESS
+    RISK_ASSESS --> LIMIT_CALC
+    LIMIT_CALC --> DECISION
+    DECISION --> DECISION_RESULT
+    
+    classDef partnerStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef bradesStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef decisionStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef continuaStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
+    
+    class INIT,DATA,VALID,DECISION partnerStyle
+    class BIO_INIT,PHOTO_ID,OCR_PROC,FACIAL_CAP,LIVENESS,FACEMATCH,DIGITAL_SIGN partnerStyle
+    class BURO,BURO_RESP bradesStyle
+    class BRE_INIT,RULE_EVAL,SCORE_CALC,RISK_ASSESS,LIMIT_CALC bradesStyle
+    class DECISION_RESULT continuaStyle

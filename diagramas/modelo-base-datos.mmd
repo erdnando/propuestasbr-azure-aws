@@ -1,0 +1,112 @@
+erDiagram
+    SOCIOS_COMERCIALES {
+        int IdSocio PK "Identity"
+        varchar_100 CodigoSocio "Unique, e.g., AMAZON_MX"
+        varchar_200 NombreSocio
+        varchar_50 TipoSocio "RETAIL, BANCO, FINTECH"
+        varchar_100 EmailContacto
+        varchar_20 TelefonoContacto
+        bit EstaActivo
+        datetime2 FechaCreacion
+        datetime2 FechaModificacion
+        varchar_500 EndpointAPI
+        varchar_100 MetodoAutenticacion
+        int MaxSolicitudesDiarias
+        varchar_50 PerfilRiesgo "BAJO, MEDIO, ALTO"
+    }
+    
+    SOLICITUDES_ORIGINACION {
+        bigint IdSolicitud PK "Identity"
+        varchar_50 CodigoSolicitud "Unique business ID"
+        int IdSocio FK
+        varchar_50 TipoProducto "TARJETA_CREDITO_AMAZON, TIENDA_DEPARTAMENTAL"
+        varchar_20 CanalOrigen "WEB, MOVIL, CALL_CENTER"
+        varchar_50 IdCampana
+        varchar_50 CodigoReferencia
+        datetime2 FechaInicio
+        datetime2 UltimaActividad
+        datetime2 FechaCompletado
+        varchar_20 EstadoActual "EN_PROCESO, APROBADO, RECHAZADO, ABANDONADO"
+        varchar_50 PasoActual
+        int TotalPasos
+        int TiempoProcesoSegundos
+        bit EstaCompleto
+        varchar_1000 Observaciones
+        datetime2 FechaCreacion
+        varchar_50 CreadoPor
+    }
+    
+    EVENTOS_AUDITORIA {
+        bigint IdEvento PK "Identity, Clustered"
+        varchar_100 TipoEvento "ORIGINATION_STARTED, etc"
+        bigint IdSolicitud FK
+        int IdSocio FK
+        datetime2 FechaHoraEvento "Indexed"
+        varchar_100 IdCorrelacion "Para seguimiento entre sistemas"
+        varchar_100 IdSesion
+        varchar_100 SistemaOrigen
+        nvarchar_max PayloadEvento "Datos JSON del evento"
+        varchar_20 EstadoEvento "EXITOSO, FALLIDO, PENDIENTE"
+        varchar_1000 MensajeError
+        int TiempoRespuestaMs
+        varchar_10 CodigoHTTP
+        datetime2 FechaProcesamiento
+        bit EsReintentable
+        int ContadorReintentos
+        varchar_100 ProcesadoPor "Sistema o usuario"
+        datetime2 FechaCreacion
+    }
+    
+    CATALOGO_TIPOS_EVENTO {
+        int IdTipoEvento PK "Identity"
+        varchar_100 CodigoEvento "Unique"
+        varchar_200 NombreEvento
+        varchar_500 DescripcionEvento
+        varchar_50 CategoriaEvento "INICIO, BIOMETRICO, CONSULTAS, etc"
+        varchar_100 SistemaResponsable
+        nvarchar_max CamposRequeridos "JSON"
+        varchar_20 NivelCriticidad "CRITICO, ALTO, NORMAL, BAJO"
+        bit RequiereValidacion
+        int TiempoEsperadoMs
+        bit EsObligatorio
+        int OrdenProceso
+        bit EstaActivo
+        datetime2 FechaCreacion
+        varchar_100 CreadoPor
+    }
+    
+    CONFIGURACION_SISTEMA {
+        int IdConfiguracion PK "Identity"
+        varchar_100 ClaveConfiguracion "Unique"
+        nvarchar_max ValorConfiguracion
+        varchar_500 Descripcion
+        varchar_20 TipoValor "STRING, JSON, INT, BOOL"
+        bit EsEditable
+        datetime2 FechaCreacion
+        datetime2 FechaModificacion
+        varchar_100 ModificadoPor
+        int VersionConfiguracion
+    }
+    
+    LOG_SISTEMA {
+        bigint IdLog PK "Identity"
+        varchar_20 NivelLog "INFO, WARNING, ERROR, CRITICAL"
+        datetime2 FechaHora
+        varchar_100 ComponenteSistema
+        nvarchar_max Mensaje
+        nvarchar_max DetallesError
+        bigint IdEvento FK "Nullable"
+        bigint IdSolicitud FK "Nullable"
+        varchar_45 DireccionIP
+        varchar_500 UserAgent
+        varchar_100 IdSesion
+        int DuracionOperacionMs
+    }
+    
+    %% Relaciones principales
+    SOCIOS_COMERCIALES ||--o{ SOLICITUDES_ORIGINACION : "genera"
+    SOLICITUDES_ORIGINACION ||--o{ EVENTOS_AUDITORIA : "registra"
+    SOCIOS_COMERCIALES ||--o{ EVENTOS_AUDITORIA : "origina"
+    CATALOGO_TIPOS_EVENTO ||--o{ EVENTOS_AUDITORIA : "define_tipo"
+    EVENTOS_AUDITORIA ||--o{ LOG_SISTEMA : "puede_generar"
+    SOLICITUDES_ORIGINACION ||--o{ LOG_SISTEMA : "puede_generar"

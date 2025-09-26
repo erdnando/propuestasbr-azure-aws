@@ -1,0 +1,85 @@
+graph TB
+    subgraph "Capa de Ingreso - Multi-Partner"
+        P1[Partner 1<br/>API Client]
+        P2[Partner 2<br/>API Client]  
+        PN[Partner N<br/>API Client]
+        LB[Azure Application Gateway<br/>WAF + Load Balancer]
+    end
+    
+    subgraph "Capa de API - Compliance"
+        APIM[Azure API Management<br/>+ OAuth2 + Rate Limiting]
+        API1[Audit API .NET 8<br/>Instance 1]
+        API2[Audit API .NET 8<br/>Instance 2]
+        VALID[Event Validator<br/>Schema Validation]
+    end
+    
+    subgraph "Capa de Procesamiento Asíncrono"
+        SB[Azure Service Bus Premium<br/>Partitioned by Partner]
+        FUNC1[Event Processor<br/>High Priority]
+        FUNC2[Event Processor<br/>Normal Priority]
+        FUNC3[Batch Processor<br/>Analytics]
+    end
+    
+    subgraph "Capa de Persistencia"
+        SQLMI[Azure SQL MI<br/>Encrypted + Partitioned]
+        COSMOS[Cosmos DB<br/>Real-time Analytics]
+        BLOB[Azure Blob Storage<br/>Long-term Archive]
+    end
+    
+    subgraph "Capa de Compliance y Monitoreo"
+        AI[Application Insights<br/>Custom Metrics]
+        SENTINEL[Azure Sentinel<br/>Security Monitoring]
+        KV[Key Vault<br/>Secrets Management]
+    end
+    
+    subgraph "Capa de Analytics"
+        SYNAPSE[Azure Synapse<br/>Data Warehouse]
+        PBI[Power BI<br/>Executive Dashboard]
+        ML[Azure ML<br/>Abandonment Prediction]
+    end
+    
+    P1 --> LB
+    P2 --> LB
+    PN --> LB
+    LB --> APIM
+    APIM --> API1
+    APIM --> API2
+    
+    API1 --> VALID
+    API2 --> VALID
+    VALID --> SB
+    
+    SB --> FUNC1
+    SB --> FUNC2  
+    SB --> FUNC3
+    
+    FUNC1 --> SQLMI
+    FUNC2 --> SQLMI
+    FUNC3 --> COSMOS
+    
+    FUNC1 --> AI
+    FUNC2 --> AI
+    FUNC3 --> AI
+    
+    SQLMI --> BLOB
+    COSMOS --> SYNAPSE
+    SYNAPSE --> PBI
+    SYNAPSE --> ML
+    
+    AI --> SENTINEL
+    KV -.-> API1
+    KV -.-> API2
+    
+    classDef partnerStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef apiStyle fill:#e1f5fe,stroke:#0277bd,stroke-width:2px  
+    classDef processStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef dataStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef complianceStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef analyticsStyle fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    
+    class P1,P2,PN,LB partnerStyle
+    class APIM,API1,API2,VALID apiStyle
+    class SB,FUNC1,FUNC2,FUNC3 processStyle
+    class SQLMI,COSMOS,BLOB dataStyle
+    class AI,SENTINEL,KV complianceStyle
+    class SYNAPSE,PBI,ML analyticsStyle
