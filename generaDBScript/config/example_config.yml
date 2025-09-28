@@ -1,0 +1,36 @@
+# Configuración de conexión y opciones de salida
+# Puedes utilizar variables de entorno usando la sintaxis ${VAR_NAME}
+
+database:
+  server: localhost
+  port: 1433
+  database: AdventureWorks
+  username: sa
+  password: ${SQLSERVER_PASSWORD}
+  schema: dbo
+  include_tables: []
+  include_views: []
+  include_procedures: []
+  include_functions: []
+  include_triggers: []
+  include_sequences: []
+  include_synonyms: []
+  include_table_types: []
+  include_user_types: []
+
+output:
+  directory: output
+  include_data: true
+  rows_per_table: null  # usa null u omite el campo para obtener todas las filas
+  batch_size: 5000
+  include_default_constraints: true
+  include_check_constraints: true
+  include_foreign_keys: true
+  include_unique_constraints: true
+  include_indexes: true
+  include_functions: true
+  include_triggers: true
+  include_sequences: true
+  include_synonyms: true
+  include_user_types: true
+  include_table_types: true
